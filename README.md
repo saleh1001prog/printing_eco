@@ -1,36 +1,172 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Informatics Solutions - Portfolio & Products
 
-## Getting Started
+موقع شركة **Informatics Solutions** لعرض الخدمات البرمجية والمنتجات، مع نظام تفعيل متكامل للمنتجات.
 
-First, run the development server:
+## 🚀 نظرة عامة
+
+هذا المشروع يتكون من:
+1. **الصفحة الرئيسية** - عرض خدمات الشركة (تطبيقات سطح المكتب، الويب، الموبايل)
+2. **صفحات المنتجات** - صفحات مستقلة لكل منتج (مثل Inventory Pro)
+3. **نظام التفعيل** - API للتفعيل بتوقيع RSA + لوحة إدارة
+
+## ✨ المميزات
+
+### الصفحة الرئيسية
+- 🎨 تصميم عصري واحترافي
+- 💼 عرض خدمات الشركة بشكل جذاب
+- 🏆 قسم للمشاريع والمنتجات
+- 📱 متجاوب مع جميع الأجهزة
+- 🌐 دعم كامل للغة العربية (RTL)
+
+### صفحات المنتجات
+- ✨ تصميم محسّن وجذاب لكل منتج
+- 🎯 عرض مفصل للمميزات والفوائد
+- 📥 أزرار تحميل واضحة
+- 🔗 روابط مستقلة لكل منتج
+
+### نظام التفعيل
+- 🔐 توقيع RSA-2048 للتراخيص
+- 📊 لوحة إدارة لطلبات التفعيل
+- 🗄️ تخزين في MongoDB
+- 🔒 مصادقة API آمنة
+
+## 🛠️ التقنيات
+
+- **Next.js 16** - إطار العمل
+- **React 19** - مكتبة الواجهات
+- **Tailwind CSS 4** - التنسيق
+- **MongoDB** - قاعدة البيانات
+- **TypeScript** - لغة البرمجة
+
+## 📦 التثبيت
+
+### 1. تثبيت المتطلبات
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. إعداد متغيرات البيئة
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+انسخ ملف `.env.example` إلى `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cp .env.example .env.local
+```
 
-## Learn More
+ثم قم بتعديل القيم:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+# MongoDB Connection
+MONGODB_URI=mongodb+srv://...
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Admin API Key (أنشئ مفتاح عشوائي آمن)
+ADMIN_API_KEY=your-secure-key
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# RSA Private Key (انظر قسم إنشاء المفاتيح)
+RSA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
+```
 
-## Deploy on Vercel
+### 3. إنشاء مفاتيح RSA
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+في بيئة التطوير، يمكنك استخدام:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# تشغيل التطبيق
+npm run dev
+
+# ثم زيارة
+http://localhost:3000/api/admin/generate-keys
+```
+
+سيتم إنشاء زوج مفاتيح RSA:
+- **Private Key** → ضعه في `RSA_PRIVATE_KEY` في Vercel
+- **Public Key** → ضعه في تطبيق سطح المكتب (SecureLicenseService.cs)
+
+### 4. تشغيل التطبيق
+
+```bash
+# بيئة التطوير
+npm run dev
+
+# بناء للإنتاج
+npm run build
+npm start
+```
+
+## 🌐 النشر على Vercel
+
+1. ارفع المشروع إلى GitHub
+2. اربطه بـ Vercel
+3. أضف متغيرات البيئة في إعدادات Vercel:
+   - `MONGODB_URI`
+   - `ADMIN_API_KEY`
+   - `RSA_PRIVATE_KEY`
+
+## 📁 هيكل المشروع
+
+```
+inventorywebapp/
+├── app/
+│   ├── page.tsx              # الصفحة الرئيسية (Informatics Solutions)
+│   ├── layout.tsx            # التخطيط
+│   ├── globals.css           # الأنماط
+│   ├── products/
+│   │   └── inventory-pro/
+│   │       └── page.tsx      # صفحة منتج Inventory Pro
+│   ├── admin/
+│   │   └── page.tsx          # لوحة إدارة التفعيل
+│   └── api/
+│       ├── activation/
+│       │   ├── request/      # طلب تفعيل جديد
+│       │   └── verify/       # التحقق والحصول على الترخيص
+│       └── admin/
+│           ├── activations/  # إدارة طلبات التفعيل
+│           └── generate-keys/ # إنشاء مفاتيح RSA (تطوير فقط)
+├── lib/
+│   ├── mongodb.ts            # اتصال قاعدة البيانات
+│   └── rsa.ts                # توقيع RSA
+├── models/
+│   └── ActivationRequest.ts  # نموذج طلب التفعيل
+└── package.json
+```
+
+## 🔌 API Endpoints
+
+### طلب تفعيل
+```
+POST /api/activation/request
+Body: { hardwareId, machineName, userName, email?, phone? }
+```
+
+### التحقق من التفعيل
+```
+POST /api/activation/verify
+Body: { hardwareId }
+Response: { success, license: { data, signature } }
+```
+
+### إدارة الطلبات (تتطلب مصادقة)
+```
+GET  /api/admin/activations
+PATCH /api/admin/activations/[id]  (approve/reject)
+DELETE /api/admin/activations/[id]
+
+Headers: Authorization: Bearer YOUR_ADMIN_API_KEY
+```
+
+## 🔐 كيف يعمل نظام التفعيل
+
+1. **فترة تجريبية 15 يوم** - تبدأ من أول تشغيل
+2. **طلب التفعيل** - يرسل التطبيق HWID للخادم
+3. **الموافقة اليدوية** - المدير يوافق بعد التحقق من الدفع
+4. **التحقق** - التطبيق يطلب الترخيص الموقّع بـ RSA
+5. **الترخيص الدائم** - يُخزّن محلياً ويعمل بدون إنترنت
+
+## 👨‍💻 المطور
+
+**Saleh Benchikh**
+
+---
+
+© 2026 Inventory Pro. جميع الحقوق محفوظة.

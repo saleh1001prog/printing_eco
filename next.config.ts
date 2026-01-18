@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  // Static landing page - no external dependencies
+}
 
-export default nextConfig;
+export default nextConfig
