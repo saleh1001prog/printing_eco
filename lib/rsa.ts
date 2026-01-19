@@ -14,6 +14,7 @@ const getPrivateKey = (): string => {
     throw new Error('RSA_PRIVATE_KEY environment variable is not set')
   }
   // Handle escaped newlines from environment variable
+  // Vercel stores \n as literal backslash-n, need to convert to actual newlines
   return privateKey.replace(/\\n/g, '\n')
 }
 
