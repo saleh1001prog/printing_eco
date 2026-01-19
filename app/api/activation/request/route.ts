@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     await connectDB()
     
     const body = await request.json()
-    const { hardwareId, machineName, userName, email, phone } = body
+    const { hardwareId, machineName, userName, email, phone, appName } = body
     
     // Validate required fields
     if (!hardwareId || !machineName || !userName) {
@@ -21,6 +21,28 @@ export async function POST(request: NextRequest) {
         { 
           success: false, 
           error: 'Missing required fields: hardwareId, machineName, userName' 
+        },
+        { status: 400 }
+      )
+    }
+    
+    // Phone number is required
+    if (!phone || phone.trim() === '') {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'رقم الهاتف مطلوب - Phone number is required' 
+        },
+        { status: 400 }
+      )
+    }
+    
+    // App name is required
+    if (!appName || appName.trim() === '') {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'اسم التطبيق مطلوب - App name is required' 
         },
         { status: 400 }
       )
@@ -46,7 +68,8 @@ export async function POST(request: NextRequest) {
       machineName,
       userName,
       email: email || null,
-      phone: phone || null,
+      phone: phone.trim(),
+      appName: appName.trim(),
       status: 'pending',
       requestedAt: new Date(),
     })

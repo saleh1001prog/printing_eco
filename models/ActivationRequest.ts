@@ -5,7 +5,8 @@ export interface IActivationRequest extends Document {
   machineName: string
   userName: string
   email?: string
-  phone?: string
+  phone: string // Required phone number
+  appName: string // Name of the desktop app (e.g., "GymManagementSystem", "InventoryManagementSystem")
   status: 'pending' | 'approved' | 'rejected'
   requestedAt: Date
   approvedAt?: Date
@@ -37,7 +38,12 @@ const ActivationRequestSchema = new Schema<IActivationRequest>(
     },
     phone: {
       type: String,
-      required: false,
+      required: true,
+    },
+    appName: {
+      type: String,
+      required: true,
+      default: 'Unknown App',
     },
     status: {
       type: String,

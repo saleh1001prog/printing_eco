@@ -18,6 +18,7 @@ import {
   Phone
 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const services = [
   {
@@ -85,8 +86,29 @@ async function getProducts() {
   }
 }
 
+// Fetch settings from API
+async function getSettings() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/settings`, {
+      cache: 'no-store'
+    })
+
+    if (!res.ok) return null
+
+    const data = await res.json()
+    return data.success ? data.settings : null
+  } catch (error) {
+    console.error('Error fetching settings:', error)
+    return null
+  }
+}
+
 export default async function Home() {
-  const products = await getProducts()
+  const [products, settings] = await Promise.all([getProducts(), getSettings()])
+  
+  // Default values if settings not loaded
+  const contactEmail = settings?.email || 'info@softera-dz.com'
+  const contactPhone = settings?.phone || '+213 XXX XXX XXX'
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -95,11 +117,15 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex items-center justify-center shadow-lg shadow-indigo-500/25">
-                <Code className="w-6 h-6" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="SOFTERA-DZ Logo"
+                width={44}
+                height={44}
+                className="rounded-xl shadow-lg shadow-indigo-500/25"
+              />
               <div className="leading-tight">
-                <div className="text-lg font-bold text-slate-900">Informatics Solutions</div>
+                <div className="text-lg font-bold text-slate-900">SOFTERA-DZ</div>
                 <div className="text-xs text-slate-500">حلول برمجية متكاملة</div>
               </div>
             </div>
@@ -399,8 +425,8 @@ export default async function Home() {
                 <Mail className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">البريد الإلكتروني</h3>
-              <a href="mailto:info@informaticssolutions.com" className="text-indigo-600 hover:text-indigo-700 transition">
-                info@informaticssolutions.com
+              <a href={`mailto:${contactEmail}`} className="text-indigo-600 hover:text-indigo-700 transition">
+                {contactEmail}
               </a>
             </div>
 
@@ -409,8 +435,8 @@ export default async function Home() {
                 <Phone className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">الهاتف</h3>
-              <a href="tel:+213XXXXXXXXX" className="text-indigo-600 hover:text-indigo-700 transition">
-                +213 XXX XXX XXX
+              <a href={`tel:${contactPhone.replace(/\s/g, '')}`} className="text-indigo-600 hover:text-indigo-700 transition">
+                {contactPhone}
               </a>
             </div>
           </div>
@@ -420,7 +446,7 @@ export default async function Home() {
               جاهز لبدء مشروعك؟ تواصل معنا اليوم واحصل على استشارة مجانية
             </p>
             <a
-              href="mailto:info@informaticssolutions.com"
+              href={`mailto:${contactEmail}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg shadow-indigo-500/25"
             >
               <Mail className="w-5 h-5" />
@@ -435,11 +461,15 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex items-center justify-center">
-                <Code className="w-5 h-5" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="SOFTERA-DZ Logo"
+                width={40}
+                height={40}
+                className="rounded-xl"
+              />
               <div>
-                <div className="font-bold text-slate-900">Informatics Solutions</div>
+                <div className="font-bold text-slate-900">SOFTERA-DZ</div>
                 <div className="text-xs text-slate-500">حلول برمجية متكاملة</div>
               </div>
             </div>
@@ -453,7 +483,7 @@ export default async function Home() {
 
           <div className="mt-8 pt-8 border-t border-slate-200 text-center">
             <p className="text-sm text-slate-500">
-              © {new Date().getFullYear()} Informatics Solutions. جميع الحقوق محفوظة.
+              © {new Date().getFullYear()} SOFTERA-DZ. جميع الحقوق محفوظة.
             </p>
             <p className="mt-2 text-xs text-slate-400">
               صُنع بـ ❤️ في الجزائر
