@@ -19,6 +19,9 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import connectDB from '@/lib/mongodb'
+import Product from '@/models/Product'
+import Settings from '@/models/Settings'
 
 const services = [
   {
@@ -69,34 +72,40 @@ const stats = [
   { value: '24/7', label: 'دعم فني' },
 ]
 
-// Fetch published products from API
+// Fetch published products directly from database
 async function getProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products?status=published`, {
-      cache: 'no-store'
-    })
-
-    if (!res.ok) return []
-
-    const data = await res.json()
-    return data.success ? data.products : []
+    await connectDB()
+    const products = await Product.find({ status: 'published' })
+      .sort({ order: 1, createdAt: -1 })
+      .lean()
+    
+    // Convert MongoDB documents to plain objects
+    return JSON.parse(JSON.stringify(products))
   } catch (error) {
     console.error('Error fetching products:', error)
     return []
   }
 }
 
-// Fetch settings from API
+// Fetch settings directly from database
 async function getSettings() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/settings`, {
-      cache: 'no-store'
-    })
-
-    if (!res.ok) return null
-
-    const data = await res.json()
-    return data.success ? data.settings : null
+    await connectDB()
+    let settings = await Settings.findOne().lean()
+    
+    if (!settings) {
+      // Return default settings if none exist
+      return {
+        email: 'info@softera-dz.com',
+        phone: '+213 XXX XXX XXX',
+        companyName: 'SOFTERA-DZ',
+        companyNameAr: 'حلول برمجية متكاملة',
+      }
+    }
+    
+    // Convert MongoDB document to plain object
+    return JSON.parse(JSON.stringify(settings))
   } catch (error) {
     console.error('Error fetching settings:', error)
     return null
