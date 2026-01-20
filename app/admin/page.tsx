@@ -41,8 +41,12 @@ export default function AdminDashboard() {
   const [activations, setActivations] = useState<ActivationRequest[]>([])
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<string>('all')
+  const [appFilter, setAppFilter] = useState<string>('all')
   const [error, setError] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  
+  // Get unique app names from activations
+  const uniqueAppNames = Array.from(new Set(activations.map(a => a.appName).filter(Boolean)))
 
   const fetchActivations = async () => {
     setLoading(true)
@@ -139,6 +143,11 @@ export default function AdminDashboard() {
       fetchActivations()
     }
   }, [status, filter])
+  
+  // Filter activations by app name (client-side filtering)
+  const filteredActivations = appFilter === 'all' 
+    ? activations 
+    : activations.filter(a => a.appName === appFilter)
 
   const handleLogout = () => {
     signOut()
@@ -271,7 +280,24 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+          {/* Total for selected app */}
+          <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                <AppWindow className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-slate-900">
+                  {filteredActivations.length}
+                </div>
+                <div className="text-sm text-slate-500">
+                  {appFilter === 'all' ? 'إجمالي الطلبات' : appFilter}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-white rounded-xl p-6 border border-slate-200">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center">
@@ -279,7 +305,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {activations.filter(a => a.status === 'pending').length}
+                  {filteredActivations.filter(a => a.status === 'pending').length}
                 </div>
                 <div className="text-sm text-slate-500">قيد الانتظار</div>
               </div>
@@ -293,7 +319,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {activations.filter(a => a.status === 'approved').length}
+                  {filteredActivations.filter(a => a.status === 'approved').length}
                 </div>
                 <div className="text-sm text-slate-500">مفعّل</div>
               </div>
@@ -307,7 +333,7 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {activations.filter(a => a.status === 'rejected').length}
+                  {filteredActivations.filter(a => a.status === 'rejected').length}
                 </div>
                 <div className="text-sm text-slate-500">مرفوض</div>
               </div>
@@ -317,7 +343,8 @@ export default function AdminDashboard() {
 
         {/* Filters & Actions */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Status Filter */}
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
@@ -328,6 +355,29 @@ export default function AdminDashboard() {
               <option value="approved">مفعّل</option>
               <option value="rejected">مرفوض</option>
             </select>
+            
+            {/* App Name Filter */}
+            <select
+              value={appFilter}
+              onChange={(e) => setAppFilter(e.target.value)}
+              className="px-4 py-2 rounded-lg border border-blue-300 bg-blue-50 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            >
+              <option value="all">جميع التطبيقات</option>
+              <option value="GymManagementSystem">GymManagementSystem</option>
+              <option value="InventoryManagementSystem">InventoryManagementSystem</option>
+              {/* Dynamic options for any other apps */}
+              {uniqueAppNames
+                .filter(name => name !== 'GymManagementSystem' && name !== 'InventoryManagementSystem')
+                .map(appName => (
+                  <option key={appName} value={appName}>{appName}</option>
+                ))
+              }
+            </select>
+            
+            {/* Show count */}
+            <span className="text-sm text-slate-500">
+              ({filteredActivations.length} طلب)
+            </span>
           </div>
 
           <button
@@ -355,14 +405,22 @@ export default function AdminDashboard() {
               <RefreshCw className="w-8 h-8 text-slate-400 animate-spin mx-auto mb-4" />
               <p className="text-slate-500">جاري التحميل...</p>
             </div>
-          ) : activations.length === 0 ? (
+          ) : filteredActivations.length === 0 ? (
             <div className="p-12 text-center">
               <Key className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <p className="text-slate-500">لا توجد طلبات تفعيل</p>
+              {appFilter !== 'all' && (
+                <button 
+                  onClick={() => setAppFilter('all')}
+                  className="mt-4 text-sm text-blue-600 hover:underline"
+                >
+                  عرض جميع التطبيقات
+                </button>
+              )}
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {activations.map((activation) => (
+              {filteredActivations.map((activation) => (
                 <div key={activation._id} className="p-6 hover:bg-slate-50 transition">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex-1 space-y-3">
