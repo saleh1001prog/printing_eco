@@ -24,6 +24,7 @@ export interface IProduct {
         titleEn: string
         description: string
         descriptionEn: string
+        imageUrl?: string
         color?: string
     }>
 
@@ -63,6 +64,7 @@ export interface IProduct {
 
     // Download Info
     downloadUrl?: string
+    downloadUrl32?: string
     version?: string
     fileSize?: string
     lastUpdate?: string
@@ -131,6 +133,7 @@ const productSchema = new mongoose.Schema<IProduct>(
                 titleEn: String,
                 description: String,
                 descriptionEn: String,
+                imageUrl: String,
                 color: String,
             },
         ],
@@ -167,6 +170,7 @@ const productSchema = new mongoose.Schema<IProduct>(
             },
         ],
         downloadUrl: String,
+        downloadUrl32: String,
         version: String,
         fileSize: String,
         lastUpdate: String,

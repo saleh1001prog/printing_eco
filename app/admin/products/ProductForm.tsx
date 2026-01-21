@@ -29,6 +29,7 @@ export default function ProductForm({ slug, onClose, onSuccess }: ProductFormPro
         requirements: [] as string[],
         benefits: [] as any[],
         downloadUrl: '',
+        downloadUrl32: '',
         version: '',
         fileSize: '',
         lastUpdate: '',
@@ -68,6 +69,7 @@ export default function ProductForm({ slug, onClose, onSuccess }: ProductFormPro
                     badge: data.product.badge || '',
                     badgeEn: data.product.badgeEn || '',
                     downloadUrl: data.product.downloadUrl || '',
+                    downloadUrl32: data.product.downloadUrl32 || '',
                     version: data.product.version || '',
                     fileSize: data.product.fileSize || '',
                     lastUpdate: data.product.lastUpdate || '',
@@ -161,12 +163,11 @@ export default function ProductForm({ slug, onClose, onSuccess }: ProductFormPro
         setFormData(prev => ({
             ...prev,
             features: [...prev.features, {
-                icon: 'Package',
                 title: '',
                 titleEn: '',
                 description: '',
                 descriptionEn: '',
-                color: 'from-blue-500 to-blue-600'
+                imageUrl: ''
             }]
         }))
     }
@@ -441,6 +442,114 @@ export default function ProductForm({ slug, onClose, onSuccess }: ProductFormPro
                             </div>
                         </div>
 
+                        {/* Features Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-bold text-slate-900">المميزات</h3>
+                                <button
+                                    type="button"
+                                    onClick={addFeature}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition text-sm font-medium"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    إضافة ميزة
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                {formData.features.map((feature, index) => (
+                                    <div key={index} className="border border-slate-200 rounded-lg p-4 space-y-3 bg-slate-50">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-slate-600">ميزة {index + 1}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setFormData({
+                                                        ...formData,
+                                                        features: formData.features.filter((_, i) => i !== index)
+                                                    })
+                                                }}
+                                                className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <input
+                                                type="text"
+                                                value={feature.title}
+                                                onChange={(e) => {
+                                                    const newFeatures = [...formData.features]
+                                                    newFeatures[index].title = e.target.value
+                                                    setFormData({ ...formData, features: newFeatures })
+                                                }}
+                                                placeholder="العنوان (عربي)"
+                                                className="w-full px-3 py-2 border border-slate-300 rounded text-sm"
+                                            />
+                                            <input
+                                                type="text"
+                                                dir="ltr"
+                                                value={feature.titleEn}
+                                                onChange={(e) => {
+                                                    const newFeatures = [...formData.features]
+                                                    newFeatures[index].titleEn = e.target.value
+                                                    setFormData({ ...formData, features: newFeatures })
+                                                }}
+                                                placeholder="Title (English)"
+                                                className="w-full px-3 py-2 border border-slate-300 rounded text-sm text-left"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <textarea
+                                                value={feature.description}
+                                                onChange={(e) => {
+                                                    const newFeatures = [...formData.features]
+                                                    newFeatures[index].description = e.target.value
+                                                    setFormData({ ...formData, features: newFeatures })
+                                                }}
+                                                placeholder="الوصف (عربي)"
+                                                rows={2}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded text-sm resize-none"
+                                            />
+                                            <textarea
+                                                dir="ltr"
+                                                value={feature.descriptionEn}
+                                                onChange={(e) => {
+                                                    const newFeatures = [...formData.features]
+                                                    newFeatures[index].descriptionEn = e.target.value
+                                                    setFormData({ ...formData, features: newFeatures })
+                                                }}
+                                                placeholder="Description (English)"
+                                                rows={2}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded text-sm resize-none text-left"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-slate-500 mb-1">رابط صورة الميزة (اختياري)</label>
+                                            <input
+                                                type="url"
+                                                dir="ltr"
+                                                value={feature.imageUrl || ''}
+                                                onChange={(e) => {
+                                                    const newFeatures = [...formData.features]
+                                                    newFeatures[index].imageUrl = e.target.value
+                                                    setFormData({ ...formData, features: newFeatures })
+                                                }}
+                                                placeholder="https://..."
+                                                className="w-full px-3 py-2 border border-slate-300 rounded text-sm text-left font-mono"
+                                            />
+                                            {feature.imageUrl && (
+                                                <img src={feature.imageUrl} alt="" className="mt-2 w-full h-24 object-cover rounded" />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                                {formData.features.length === 0 && (
+                                    <p className="text-sm text-slate-500 text-center py-4">لا توجد مميزات. انقر على "إضافة ميزة" لإضافة واحدة.</p>
+                                )}
+                            </div>
+                        </div>
+
                         {/* Download Info */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-bold text-slate-900">معلومات التحميل</h3>
@@ -448,13 +557,27 @@ export default function ProductForm({ slug, onClose, onSuccess }: ProductFormPro
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        رابط التحميل
+                                        رابط التحميل (64-bit)
                                     </label>
                                     <input
                                         dir="ltr"
                                         type="url"
                                         value={formData.downloadUrl}
                                         onChange={(e) => setFormData({ ...formData, downloadUrl: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-left font-mono"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                        رابط التحميل (32-bit)
+                                    </label>
+                                    <input
+                                        dir="ltr"
+                                        type="url"
+                                        value={formData.downloadUrl32}
+                                        onChange={(e) => setFormData({ ...formData, downloadUrl32: e.target.value })}
                                         className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-left font-mono"
                                         placeholder="https://..."
                                     />
@@ -548,13 +671,6 @@ export default function ProductForm({ slug, onClose, onSuccess }: ProductFormPro
                             </div>
                         </div>
 
-                        {/* Note about features, benefits, etc. */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <p className="text-sm text-blue-800">
-                                <strong>ملاحظة:</strong> يمكنك إضافة المميزات، الفوائد، التقنيات، والمتطلبات بعد حفظ المنتج من خلال تعديله.
-                                هذا النموذج يركز على المعلومات الأساسية فقط.
-                            </p>
-                        </div>
 
                         {/* Actions */}
                         <div className="flex items-center justify-end gap-4 pt-6 border-t border-slate-200">
