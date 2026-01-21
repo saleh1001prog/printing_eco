@@ -1,5 +1,27 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
 import { Package, Home, ArrowRight, Filter } from 'lucide-react'
+import { generateWebPageSchema } from '@/lib/structuredData'
+
+export const metadata: Metadata = {
+  title: 'منتجاتنا - أنظمة وبرامج إدارة الأعمال',
+  description: 'استكشف مجموعة منتجات Softera-DZ من أنظمة إدارة المخزون، نقطة البيع، برامج المحاسبة، وحلول الأعمال المتكاملة للشركات في الجزائر.',
+  keywords: [
+    'منتجات Softera-DZ',
+    'برامج إدارة الأعمال',
+    'أنظمة المخزون الجزائر',
+    'برامج المحاسبة',
+    'نقطة البيع POS',
+  ],
+  openGraph: {
+    title: 'منتجات Softera-DZ | أنظمة إدارة الأعمال',
+    description: 'حلول برمجية متكاملة للشركات الجزائرية',
+    url: 'https://softera-dz.com/products',
+  },
+  alternates: {
+    canonical: 'https://softera-dz.com/products',
+  },
+}
 
 // Fetch all published products
 async function getProducts() {
@@ -21,6 +43,13 @@ async function getProducts() {
 export default async function ProductsPage() {
     const products = await getProducts()
 
+    // Generate structured data
+    const pageSchema = generateWebPageSchema({
+        title: 'منتجات Softera-DZ',
+        description: 'مجموعة من الحلول البرمجية للشركات',
+        url: 'https://softera-dz.com/products',
+    })
+
     // Group products by type
     const productsByType = products.reduce((acc: any, product: any) => {
         if (!acc[product.type]) {
@@ -34,6 +63,11 @@ export default async function ProductsPage() {
 
     return (
         <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+            {/* Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+            />
             {/* Header */}
             <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-lg shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

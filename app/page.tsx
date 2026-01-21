@@ -12,6 +12,28 @@ import Image from 'next/image'
 import connectDB from '@/lib/mongodb'
 import Product from '@/models/Product'
 import Settings from '@/models/Settings'
+import { generateOrganizationSchema } from '@/lib/structuredData'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'الرئيسية - حلول برمجية احترافية للشركات',
+  description: 'Softera-DZ شركة جزائرية متخصصة في تطوير البرمجيات. نقدم أنظمة إدارة المخزون، نقطة البيع POS، برامج المحاسبة، تطبيقات الويب والموبايل للشركات الصغيرة والمتوسطة في الجزائر.',
+  keywords: [
+    'شركة برمجيات الجزائر',
+    'تطوير تطبيقات الجزائر',
+    'Softera-DZ',
+    'أنظمة إدارة الأعمال',
+    'حلول تقنية للشركات',
+  ],
+  openGraph: {
+    title: 'Softera-DZ | حلول برمجية احترافية',
+    description: 'شركة جزائرية رائدة في تطوير البرمجيات وأنظمة إدارة الأعمال',
+    url: 'https://softera-dz.com',
+  },
+  alternates: {
+    canonical: 'https://softera-dz.com',
+  },
+}
 
 const services = [
   {
@@ -86,8 +108,15 @@ export default async function Home() {
   const contactEmail = settings?.email || 'info@softera-dz.com'
   const contactPhone = settings?.phone || '+213 XXX XXX XXX'
 
+  const organizationSchema = generateOrganizationSchema()
+
   return (
     <main className="min-h-screen bg-white">
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">

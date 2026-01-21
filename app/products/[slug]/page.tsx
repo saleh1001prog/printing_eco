@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import {
     Package,
     Home,
@@ -10,6 +11,11 @@ import {
 import dbConnect from '@/lib/mongodb'
 import ProductModel from '@/models/Product'
 import ScreenshotGallery from '../components/ScreenshotGallery'
+import { 
+    generateSoftwareApplicationSchema, 
+    generateBreadcrumbSchema,
+    generateProductSchema 
+} from '@/lib/structuredData'
 
 async function getProduct(slug: string) {
     try {
@@ -23,6 +29,50 @@ async function getProduct(slug: string) {
     }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params
+    const product = await getProduct(slug)
+
+    if (!product) {
+        return {
+            title: 'المنتج غير موجود',
+        }
+    }
+
+    return {
+        title: `${product.name} - ${product.shortDescription}`,
+        description: product.description.slice(0, 160),
+        keywords: [
+            product.name,
+            product.type,
+            'Softera-DZ',
+            'برامج الجزائر',
+            ...(product.keywords || []),
+        ],
+        openGraph: {
+            title: `${product.name} | Softera-DZ`,
+            description: product.shortDescription,
+            url: `https://softera-dz.com/products/${product.slug}`,
+            type: 'website',
+            images: product.screenshots?.slice(0, 1).map((s: any) => ({
+                url: s.url,
+                width: 1200,
+                height: 630,
+                alt: product.name,
+            })) || [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: product.name,
+            description: product.shortDescription,
+            images: product.screenshots?.[0]?.url ? [product.screenshots[0].url] : [],
+        },
+        alternates: {
+            canonical: `https://softera-dz.com/products/${product.slug}`,
+        },
+    }
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
     const product = await getProduct(slug)
@@ -31,8 +81,30 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         notFound()
     }
 
+    // Generate structured data
+    const softwareSchema = generateSoftwareApplicationSchema(product)
+    const productSchema = generateProductSchema(product)
+    const breadcrumbSchema = generateBreadcrumbSchema([
+        { name: 'الرئيسية', url: 'https://softera-dz.com' },
+        { name: 'المنتجات', url: 'https://softera-dz.com/products' },
+        { name: product.name, url: `https://softera-dz.com/products/${product.slug}` },
+    ])
+
     return (
         <main className="min-h-screen bg-white">
+            {/* Structured Data for SEO */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             {/* Header */}
             <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur-sm">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6">
