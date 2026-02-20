@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
   // Generate ETags for better caching
   generateEtags: true,
   
-  // Powering headers for security and SEO
+  // 🔒 SECURITY: Enhanced security headers
   async headers() {
     return [
       {
@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: 'DENY' // Prevent clickjacking attacks
           },
           {
             key: 'X-Content-Type-Options',
@@ -40,7 +40,32 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains' // HTTPS enforcement
+          },
+        ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
           },
         ],
       },

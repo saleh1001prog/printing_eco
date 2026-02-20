@@ -36,6 +36,18 @@ export async function GET() {
 // PUT - Update settings (admin only)
 export async function PUT(request: NextRequest) {
     try {
+        // 🔒 SECURITY: Check admin authentication
+        const { getServerSession } = await import("next-auth/next")
+        const { authOptions } = await import("../auth/[...nextauth]/route")
+        
+        const session = await getServerSession(authOptions)
+        if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
+            return NextResponse.json(
+                { success: false, error: 'Unauthorized: Admin access required' },
+                { status: 401 }
+            )
+        }
+
         await connectDB()
 
         const body = await request.json()

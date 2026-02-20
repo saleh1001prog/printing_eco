@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 // POST - Create new product (Admin only)
 export async function POST(request: NextRequest) {
     try {
-        // Check admin authentication
+        // 🔒 SECURITY: Check admin authentication
         const session = await getServerSession(authOptions)
         if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
@@ -42,6 +42,15 @@ export async function POST(request: NextRequest) {
         await dbConnect()
 
         const body = await request.json()
+        
+        // 🔒 SECURITY: Validate input
+        if (!body.name || !body.slug) {
+            return NextResponse.json(
+                { success: false, error: 'Name and slug are required' },
+                { status: 400 }
+            )
+        }
+
         const product = await Product.create(body)
 
         return NextResponse.json({ success: true, product }, { status: 201 })

@@ -10,15 +10,41 @@ export const authOptions: AuthOptions = {
     ],
     callbacks: {
         async signIn({ user }) {
+            // 🔒 SECURITY: Only allow specific admin email
             if (user.email === process.env.ADMIN_EMAIL) {
                 return true
             }
             return false
         },
+        async session({ session, token }) {
+            // Add additional security info to session
+            if (session?.user) {
+                session.user.email = token.email
+            }
+            return session
+        },
+    },
+    session: {
+        // 🔒 SECURITY: Session expires after 7 days
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        updateAge: 24 * 60 * 60, // Update session every 24 hours
     },
     pages: {
-        error: '/auth/error', // New: Custom error page
-    }
+        signIn: '/admin', // Redirect to admin page for sign-in
+        error: '/auth/error',
+    },
+    // 🔒 SECURITY: Use secure cookies in production
+    cookies: {
+        sessionToken: {
+            name: `${process.env.NODE_ENV === 'production' ? '__Secure-' : ''}next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+            },
+        },
+    },
 }
 
 const handler = NextAuth(authOptions)

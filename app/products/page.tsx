@@ -1,39 +1,39 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Package, Home, ArrowRight, Filter } from 'lucide-react'
+import dbConnect from '@/lib/mongodb'
+import Product from '@/models/Product'
 import { generateWebPageSchema } from '@/lib/structuredData'
 
 export const metadata: Metadata = {
-  title: 'منتجاتنا - أنظمة وبرامج إدارة الأعمال',
-  description: 'استكشف مجموعة منتجات Softera-DZ من أنظمة إدارة المخزون، نقطة البيع، برامج المحاسبة، وحلول الأعمال المتكاملة للشركات في الجزائر.',
-  keywords: [
-    'منتجات Softera-DZ',
-    'برامج إدارة الأعمال',
-    'أنظمة المخزون الجزائر',
-    'برامج المحاسبة',
-    'نقطة البيع POS',
-  ],
-  openGraph: {
-    title: 'منتجات Softera-DZ | أنظمة إدارة الأعمال',
-    description: 'حلول برمجية متكاملة للشركات الجزائرية',
-    url: 'https://softera-dz.com/products',
-  },
-  alternates: {
-    canonical: 'https://softera-dz.com/products',
-  },
+    title: 'منتجاتنا - أنظمة وبرامج إدارة الأعمال',
+    description: 'استكشف مجموعة منتجات Softera-DZ من أنظمة إدارة المخزون، نقطة البيع، برامج المحاسبة، وحلول الأعمال المتكاملة للشركات في الجزائر.',
+    keywords: [
+        'منتجات Softera-DZ',
+        'برامج إدارة الأعمال',
+        'أنظمة المخزون الجزائر',
+        'برامج المحاسبة',
+        'نقطة البيع POS',
+    ],
+    openGraph: {
+        title: 'منتجات Softera-DZ | أنظمة إدارة الأعمال',
+        description: 'حلول برمجية متكاملة للشركات الجزائرية',
+        url: 'https://softera-dz.com/products',
+    },
+    alternates: {
+        canonical: 'https://softera-dz.com/products',
+    },
 }
 
-// Fetch all published products
+// Fetch all published products directly from database
 async function getProducts() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/products?status=published`, {
-            cache: 'no-store'
-        })
+        await dbConnect()
+        const products = await Product.find({ status: 'published' })
+            .sort({ order: 1, createdAt: -1 })
+            .lean()
 
-        if (!res.ok) return []
-
-        const data = await res.json()
-        return data.success ? data.products : []
+        return JSON.parse(JSON.stringify(products))
     } catch (error) {
         console.error('Error fetching products:', error)
         return []
