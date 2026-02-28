@@ -214,7 +214,7 @@ export default function AdminDashboard() {
             </div>
 
             <button
-              onClick={() => signIn('google')}
+              onClick={() => signIn('google', { callbackUrl: '/admin' })}
               className="w-full py-3 px-4 rounded-lg bg-white border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 font-semibold transition flex items-center justify-center gap-3"
             >
               <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />

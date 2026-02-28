@@ -30,8 +30,8 @@ export const authOptions: AuthOptions = {
         updateAge: 24 * 60 * 60, // Update session every 24 hours
     },
     pages: {
-        signIn: '/admin', // Redirect to admin page for sign-in
-        error: '/auth/error',
+        signIn: '/admin/login', // ✅ Dedicated login page to avoid redirect loop
+        error: '/admin/login',  // ✅ Redirect errors to login page too
     },
     // 🔒 SECURITY: Use secure cookies in production
     cookies: {
