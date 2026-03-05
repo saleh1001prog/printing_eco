@@ -17,6 +17,9 @@ import {
     generateProductSchema 
 } from '@/lib/structuredData'
 
+// 🔄 Revalidate every 60 seconds - fresh data without caching issues
+export const revalidate = 60
+
 async function getProduct(slug: string) {
     try {
         await dbConnect()

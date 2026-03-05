@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   },
   description: "شركة Softera-DZ متخصصة في تطوير البرمجيات في الجزائر. نقدم أنظمة إدارة المخزون، نقطة البيع، برامج المحاسبة، وحلول برمجية متكاملة للشركات الصغيرة والمتوسطة.",
   keywords: [
-    // Arabic Keywords - Algeria focused
     "Softera-DZ", "سوفتيرا الجزائر",
     "برامج محاسبة الجزائر", "نظام إدارة المخزون الجزائر",
     "نقطة البيع الجزائر", "POS الجزائر",
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
     "نظام المحاسبة للشركات", "إدارة المبيعات",
     "برنامج المخازن", "إدارة المستودعات",
     "نظام الموارد البشرية", "برنامج الرواتب",
-    // English Keywords
+
     "inventory management Algeria", "POS system Algeria",
     "accounting software Algeria", "business management software",
     "ERP Algeria", "warehouse management", "Softera DZ"

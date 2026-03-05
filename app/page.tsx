@@ -35,6 +35,9 @@ export const metadata: Metadata = {
   },
 }
 
+// 🔄 Revalidate every 60 seconds - fresh data without caching issues
+export const revalidate = 60
+
 const services = [
   {
     icon: Monitor,

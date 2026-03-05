@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     },
 }
 
+// 🔄 Revalidate every 60 seconds - fresh data without caching issues
+export const revalidate = 60
+
 // Fetch all published products directly from database
 async function getProducts() {
     try {
